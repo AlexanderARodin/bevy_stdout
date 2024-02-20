@@ -142,7 +142,7 @@ fn process_draw( cd: &mut ConsoleDraw, i: u16, pointer: &(u16,u16) ) -> Result<(
             .print("^")?;
     }
     //
-    cd  .set_colors( xColors{foreground:Some(xColor::Reset),background:Some(xColor::Grey)} )?;
+    cd  .set_colors( xColors{foreground:Some(xColor::Reset),background:Some(xColor::Black)} )?;
     let info = format!( "size: {},{}", cd.width, cd.height);
     cd  .move_to( 10, 10 )?
         .set_colors( xColors{foreground:None,background:None} )?
