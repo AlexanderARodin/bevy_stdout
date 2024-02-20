@@ -43,6 +43,7 @@ impl StdoutPlugin {
             if enter_cli {
                 enter_cli = false;
                 cw.restore_main_screen()?;
+                let mut automouse = false;
                 match get_cli_command()?.as_str() {
                     "" => {
                         cw.error( "\n" );
@@ -50,12 +51,15 @@ impl StdoutPlugin {
                     "stop" => {
                         return Err(anyhow!( "exit by command <stop>" ));
                     },
+                    "automouse" => {
+                        automouse = true;
+                    },
                     another => {
                         cw.error( format!("unknown command <{}>\n..IGNORED!", another).as_str() );
                     },
                 }
                 std::thread::sleep(std::time::Duration::from_millis(200));
-                cw.enter_alt_screen(false)?;
+                cw.enter_alt_screen( automouse )?;
             }
             //
             app.update();
