@@ -5,16 +5,13 @@ edition = "2021"
 
 
 [dependencies]
-# crossterm = "0.27.0"
+anyhow = "1.0"
+
 # bevy = { version = "0.12", features = ["dynamic_linking"] }
 bevy = { version = "0.13", features = ["dynamic_linking"] }
 
-#[target.x86_64-unknown-linux-gnu.
-#bevy = "0.13"
-
-console_window = { path = "../console_window/" }
-anyhow = "1.0"
-
+# console_window = { path = "../console_window/" }
+console_window = { git = "https://github.com/AlexanderARodin/console_window.git", branch="main" }
 
 
 [profile.dev]

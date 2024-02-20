@@ -42,7 +42,7 @@ impl StdoutPlugin {
             }
             if enter_cli {
                 enter_cli = false;
-                cw.restore_main_screen();
+                cw.restore_main_screen()?;
                 match get_cli_command()?.as_str() {
                     "" => {
                         cw.error( "\n" );
@@ -55,7 +55,7 @@ impl StdoutPlugin {
                     },
                 }
                 std::thread::sleep(std::time::Duration::from_millis(200));
-                cw.enter_alt_screen(false);
+                cw.enter_alt_screen(false)?;
             }
             //
             app.update();

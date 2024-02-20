@@ -16,6 +16,6 @@ fn main() {
 
 
 //
-fn test_system( update_index: Res<UpdateIndex> ) {
-    println!("   <--> test_system: #{}", update_index.0);
-}
+//fn test_system( update_index: Res<UpdateIndex> ) {
+//    println!("   <--> test_system: #{}", update_index.0);
+//}
