@@ -1,4 +1,6 @@
-//use crate::prelude::*;
+use std::io::Write;
+
+use crate::prelude::*;
 
 use anyhow::anyhow;
 use bevy::prelude::*;
@@ -27,21 +29,47 @@ impl StdoutPlugin {
         //
         // loop
         let mut pointer = (0,0);
-        for i in 0..=65535 {
+        let mut i = 0_u16;
+        let mut enter_cli = false;
+        loop {
             let title = format!(" --> {}", i);
             ConsoleWindow::set_title(&title)?;
-            match process_input()? {
+            match process_input(&mut enter_cli)? {
                 None => {},
                 Some( pos ) => {
                     pointer = pos;
                 },
             }
+            if enter_cli {
+                enter_cli = false;
+                cw.restore_main_screen();
+                match get_cli_command()?.as_str() {
+                    "" => {
+                        cw.error( "\n" );
+                    },
+                    "stop" => {
+                        return Err(anyhow!( "exit by command <stop>" ));
+                    },
+                    another => {
+                        cw.error( format!("unknown command <{}>\n..IGNORED!", another).as_str() );
+                    },
+                }
+                std::thread::sleep(std::time::Duration::from_millis(200));
+                cw.enter_alt_screen(false);
+            }
+            //
             app.update();
             {
                 let mut cd = cw.get_painter()?;
                 process_draw( &mut cd, i, &pointer )?;
             }
             std::thread::sleep(std::time::Duration::from_millis(1)); // TODO: debug only
+            //
+            if i >= 55555 {
+                break;
+            }else{
+                i += 1;
+            }
         }
         //
         // - [ ] check AppExit
@@ -50,16 +78,27 @@ impl StdoutPlugin {
     }
 }
 
+fn get_cli_command() -> Result<String> {
+    print!("cli > ");
+    std::io::stdout().flush()?;
+    for line in std::io::stdin().lines() {
+        return Ok(line?);
+    }
+    Ok( "".to_string() )
+}
 
 
 
 
-fn process_input() -> Result< Option<(u16,u16)> > {
+fn process_input(enter_cli: &mut bool) -> Result< Option<(u16,u16)> > {
     let inputs = ConsoleWindow::read_events()?;
     let mut result: Option< (u16,u16) > = None;
     for event in inputs {
         match event {
             xEvent::Event::Key(key) => {
+                if key.code == xEvent::KeyCode::Char('`') {
+                    *enter_cli = true;
+                }
                 if key.code == xEvent::KeyCode::Char('c') {
                     if key.modifiers .contains( xEvent::KeyModifiers::CONTROL ) {
                         return Err(anyhow!( "<C-c>" ));
