@@ -11,7 +11,7 @@ anyhow = "1.0"
 bevy = { version = "0.13", features = ["dynamic_linking"] }
 
 # console_window = { path = "../console_window/" }
-console_window = { git = "https://github.com/AlexanderARodin/console_window.git", branch="main" }
+console_window = { git = "https://github.com/AlexanderARodin/console_window.git", branch="dev" }
 
 
 [profile.dev]
