@@ -5,8 +5,12 @@ edition = "2021"
 
 
 [dependencies]
-crossterm = "0.27.0"
-bevy = { version = "0.12", features = ["dynamic_linking"] }
+# crossterm = "0.27.0"
+# bevy = { version = "0.12", features = ["dynamic_linking"] }
+bevy = { version = "0.13", features = ["dynamic_linking"] }
+
+console_window = { path = "../console_window/" }
+anyhow = "1.0"
 
 
 
