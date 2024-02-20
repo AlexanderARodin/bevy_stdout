@@ -29,12 +29,13 @@ impl StdoutPlugin {
         //
         // loop
         let mut pointer = (0,0);
+        let mut sz = (0,0);
         let mut i = 0_u16;
         let mut enter_cli = false;
         loop {
             let title = format!(" --> {}", i);
             ConsoleWindow::set_title(&title)?;
-            match process_input(&mut enter_cli)? {
+            match process_input(&mut enter_cli, &mut sz )? {
                 None => {},
                 Some( pos ) => {
                     pointer = pos;
@@ -65,7 +66,7 @@ impl StdoutPlugin {
             app.update();
             {
                 let mut cd = cw.get_painter()?;
-                process_draw( &mut cd, i, &pointer )?;
+                process_draw( &mut cd, i, &pointer, &sz )?;
             }
             std::thread::sleep(std::time::Duration::from_millis(1)); // TODO: debug only
             //
@@ -94,7 +95,7 @@ fn get_cli_command() -> Result<String> {
 
 
 
-fn process_input(enter_cli: &mut bool) -> Result< Option<(u16,u16)> > {
+fn process_input(enter_cli: &mut bool, sz: &mut (u16,u16) ) -> Result< Option<(u16,u16)> > {
     let inputs = ConsoleWindow::read_events()?;
     let mut result: Option< (u16,u16) > = None;
     for event in inputs {
@@ -114,6 +115,9 @@ fn process_input(enter_cli: &mut bool) -> Result< Option<(u16,u16)> > {
             xEvent::Event::Mouse( mouse_event ) => {
                result = Some( (mouse_event.column, mouse_event.row) );
             },
+            xEvent::Event::Resize(w, h) => {
+                *sz = (w,h);
+            },
             _ => {
             },
         }
@@ -121,7 +125,7 @@ fn process_input(enter_cli: &mut bool) -> Result< Option<(u16,u16)> > {
     Ok( result )
 }
 
-fn process_draw( cd: &mut ConsoleDraw, i: u16, pointer: &(u16,u16) ) -> Result<()> {
+fn process_draw( cd: &mut ConsoleDraw, i: u16, pointer: &(u16,u16), sz: &(u16,u16) ) -> Result<()> {
     cd  .move_to( i/100, i/100 )?
         .print( "x---------------------------------------------------------x" )?;
     //
@@ -150,5 +154,8 @@ fn process_draw( cd: &mut ConsoleDraw, i: u16, pointer: &(u16,u16) ) -> Result<(
     let info2 = format!( "cursor: {},{}", pointer.0, pointer.1);
     cd  .move_to( 10, 11 )?
         .print(&info2)?;
+    let sz = format!( "event size: {},{}", sz.0, sz.1);
+    cd  .move_to( 20, 15 )?
+        .print(&sz)?;
     Ok(())
 }
